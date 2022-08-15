@@ -63,6 +63,7 @@ class Trainer:
         self.batch_size = batch_size
         self.num_epochs = num_epochs
         self.optimizer_name = optimizer_name
+        self.criterion_name = loss_function
         self.loss_function = loss_function
         self.lr = lr
         self.alpha = alpha
@@ -85,8 +86,8 @@ class Trainer:
         self.net_degree = self.getNetwork(self.net_degree)
         self.net_radian = self.getNetwork(self.net_radian)
 
-        self.optimizer_deg = self.getOptimizer(self.optimizer_name, self.lr)
-        self.optimizer_rad = self.getOptimizer(self.optimizer_name, self.lr)
+        self.optimizer_deg = self.getOptimizer(self.optimizer_name, self.lr, self.net_degree)
+        self.optimizer_rad = self.getOptimizer(self.optimizer_name, self.lr, self.net_radian)
         self.criterion = self.getCriterion(self.criterion_name)
 
     def setRandomCondition(self, keep_reproducibility=False, seed=123456789):
@@ -132,15 +133,15 @@ class Trainer:
 
         return net
 
-    def getOptimizer(self, optimizer_name, lr_vit):
+    def getOptimizer(self, optimizer_name, lr, net):
 
         if optimizer_name == "SGD":
-            optimizer = optim.SGD(self.net.parameters() ,lr = lr, momentum=0.9, 
+            optimizer = optim.SGD(net.parameters() ,lr = lr, momentum=0.9, 
             weight_decay=0.0)
         elif optimizer_name == "Adam":
-            optimizer = optim.Adam(self.net.parameters(), lr = lr_vit, weight_decay=0.0)
+            optimizer = optim.Adam(net.parameters(), lr = lr, weight_decay=0.0)
         elif optimizer_name == "RAdam":
-            optimizer = optim.RAdam(self.net.parameters(), lr = lr_vit, weight_decay=0.0)
+            optimizer = optim.RAdam(net.parameters(), lr = lr, weight_decay=0.0)
 
         print("optimizer: {}".format(optimizer_name))
         return optimizer
@@ -213,7 +214,7 @@ class Trainer:
                 epoch_loss_degree = 0.0
                 epoch_loss_radian = 0.0
 
-                for img_deg, label_deg, img_rad, label_rad in self.dataloaders_dict[phase]:
+                for img_deg, label_deg, img_rad, label_rad in tqdm(self.dataloaders_dict[phase]):
                     self.optimizer_deg.zero_grad()
                     self.optimizer_rad.zero_grad()
 
@@ -387,7 +388,7 @@ if __name__ == "__main__":
         phase = "train",
     )
 
-    print("Load Train Dataset")
+    print("Load Valid Dataset")
 
     valid_dataset = dataset_mod.Originaldataset(
         data_list = make_datalist_mod.makeMultiDataList(train_sequence, csv_name),

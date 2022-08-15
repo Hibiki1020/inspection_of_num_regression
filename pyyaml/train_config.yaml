@@ -2,24 +2,26 @@ save_top_path: "/home/log/train_log"
 
 
 train:
-  - "/home/strage/flight_airsim_image/train_sequence1/degree_0"
-  - "/home/strage/flight_airsim_image/train_sequence1/degree_5"
-  - "/home/strage/flight_airsim_image/train_sequence1/degree_10"
-  - "/home/strage/flight_airsim_image/train_sequence2/degree_0"
-  - "/home/strage/flight_airsim_image/train_sequence2/degree_5"
-  - "/home/strage/flight_airsim_image/train_sequence2/degree_10"
-  - "/home/strage/flight_airsim_image/train_sequence3/degree_0"
-  - "/home/strage/flight_airsim_image/train_sequence3/degree_5"
-  - "/home/strage/flight_airsim_image/train_sequence3/degree_10"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence1/degree_0"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence1/degree_5"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence1/degree_10"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence2/degree_0"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence2/degree_5"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence2/degree_10"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence3/degree_0"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence3/degree_5"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence3/degree_10"
+  - "/home/ssd_dir/flight_airsim_image/sequence9"
+  - "/home/ssd_dir/flight_airsim_image/sequence10"
 
 valid:
-  - "/home/strage/flight_airsim_image/train_sequence4/degree_0"
-  - "/home/strage/flight_airsim_image/train_sequence4/degree_5"
-  - "/home/strage/flight_airsim_image/train_sequence4/degree_10"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence4/degree_0"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence4/degree_5"
+  - "/home/ssd_dir/flight_airsim_image/train_sequence4/degree_10"
 
 csv_name: "data_list.csv"
 
-multiGPU: 0 #1 is ture
+multiGPU: 1 #1 is ture
 
 hyperparameters:
   img_size: 224
