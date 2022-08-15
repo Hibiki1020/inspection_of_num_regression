@@ -1,0 +1,37 @@
+save_top_path: "/home/log/train_log"
+
+
+train:
+  - "/home/strage/flight_airsim_image/train_sequence1/degree_0"
+  - "/home/strage/flight_airsim_image/train_sequence1/degree_5"
+  - "/home/strage/flight_airsim_image/train_sequence1/degree_10"
+  - "/home/strage/flight_airsim_image/train_sequence2/degree_0"
+  - "/home/strage/flight_airsim_image/train_sequence2/degree_5"
+  - "/home/strage/flight_airsim_image/train_sequence2/degree_10"
+  - "/home/strage/flight_airsim_image/train_sequence3/degree_0"
+  - "/home/strage/flight_airsim_image/train_sequence3/degree_5"
+  - "/home/strage/flight_airsim_image/train_sequence3/degree_10"
+
+valid:
+  - "/home/strage/flight_airsim_image/train_sequence4/degree_0"
+  - "/home/strage/flight_airsim_image/train_sequence4/degree_5"
+  - "/home/strage/flight_airsim_image/train_sequence4/degree_10"
+
+csv_name: "data_list.csv"
+
+multiGPU: 0 #1 is ture
+
+hyperparameters:
+  img_size: 224
+  resize: 224
+  batch_size: 64
+  num_epochs: 200
+  optimizer_name: "RAdam"
+  loss_function: "MSELoss"
+  lr: 1e-5
+  alpha: 1e-5
+  num_workers: 6
+  save_step: 50
+  mean_element: 0.5
+  std_element: 0.5
+  dropout_rate: 0.5
