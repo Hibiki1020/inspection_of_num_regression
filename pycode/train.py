@@ -266,6 +266,8 @@ class Trainer:
                 epoch_loss_radian = epoch_loss_radian / len(self.dataloaders_dict[phase].dataset)
                 print("{} Loss: {:.4f}".format(phase, epoch_loss_radian))
 
+
+
                 if(epoch%self.save_step == 0 and epoch > 0 and epoch != self.num_epochs and phase == "valid"):
                     self.saveWeight_Interval(epoch)
 
@@ -290,10 +292,10 @@ class Trainer:
             if record_train_loss_rad and record_valid_loss_rad:
                 writer.add_scalars("Loss/train_and_val", {"train": record_train_loss_rad[-1], "valid": record_valid_loss_rad[-1]}, epoch)
 
-            writer.close()
-            self.saveParam()
+        writer.close()
+        self.saveParam()
 
-            self.saveGraph(record_train_loss_deg, record_valid_loss_deg, record_train_loss_rad, record_valid_loss_rad)
+        self.saveGraph(record_train_loss_deg, record_valid_loss_deg, record_train_loss_rad, record_valid_loss_rad)
 
 
     def computeLoss(self, outputs, labels):
