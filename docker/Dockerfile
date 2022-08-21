@@ -10,7 +10,9 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y \
+    libopencv-dev \
 	vim \
 	wget \
 	unzip \
@@ -18,7 +20,8 @@ RUN apt-get update && apt-get install -y \
 	build-essential \
 	libsm6 \
 	libxrender1 \
-	libxext-dev
+	libxext-dev \
+    libgl1-mesa-dev
 
 RUN apt-get update && \
 	apt-get install -y \

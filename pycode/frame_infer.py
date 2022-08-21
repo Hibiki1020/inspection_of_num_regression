@@ -43,11 +43,11 @@ class FrameInfer:
         self.csv_name = self.CFG["csv_name"]
 
         self.radian_weights_top_directory = self.CFG["radian_weights_top_directory"]
-        self.radian_weights_name = self.CFG["radian_weights_name"]
+        self.radian_weights_name = self.CFG["radian_weights_file_name"]
         self.radian_weights_path = os.path.join(self.radian_weights_top_directory, self.radian_weights_name)
 
         self.degree_weights_top_directory = self.CFG["degree_weights_top_directory"]
-        self.degree_weights_name = self.CFG["degree_weights_name"]
+        self.degree_weights_name = self.CFG["degree_weights_file_name"]
         self.degree_weights_path = os.path.join(self.degree_weights_top_directory, self.degree_weights_name)
 
         self.infer_log_top_directory = self.CFG["infer_log_top_directory"]
@@ -57,6 +57,7 @@ class FrameInfer:
         self.resize = int(self.CFG["resize"])
         self.mean_element = float(self.CFG["mean_element"])
         self.std_element = float(self.CFG["std_element"])
+        self.dropout_rate = float(self.CFG["dropout_rate"])
 
         self.transform = data_transform_mod.DataTransform(
             self.resize, self.mean_element, self.std_element
@@ -81,7 +82,7 @@ class FrameInfer:
         )
 
     def getNetwork(self, weights_path):
-        net = network_mod.Network(self.CFG)
+        net = network_mod.Network(self.resize, self.dropout_rate, use_pretrained_vgg=False)
         net.load_state_dict(torch.load(weights_path, map_location=self.device))
         net.to(self.device)
         net.eval()
@@ -123,27 +124,42 @@ class FrameInfer:
             img_rad = img_rad.unsqueeze(dim=0)
             img_rad = img_rad.to(self.device)
 
-            deg_roll, deg_pitch = self.net_degree(img_deg)
-            rad_roll, rad_pitch = self.net_radian(img_rad)
+            deg_result = self.net_degree(img_deg).to('cpu').detach().numpy().copy()
+            deg_roll = deg_result[0][0]
+            deg_pitch = deg_result[0][1]
+
+            rad_result = self.net_radian(img_rad).to('cpu').detach().numpy().copy()
+            rad_roll = rad_result[0][0]
+            rad_pitch = rad_result[0][1]
+
+            deg_diff_roll = abs(deg_roll - label_deg[0]).to('cpu').detach().numpy().copy()
+            deg_diff_pitch = abs(deg_pitch - label_deg[1]).to('cpu').detach().numpy().copy()
+            rad_diff_roll = abs(rad_roll - label_rad[0]).to('cpu').detach().numpy().copy()
+            rad_diff_pitch = abs(rad_pitch - label_rad[1]).to('cpu').detach().numpy().copy()
+            
+            label_deg = label_deg.to('cpu').detach().numpy().copy()
+            label_rad = label_rad.to('cpu').detach().numpy().copy()
+
+            #print(label_deg, label_rad)
 
             print("Infer Count: ", infer_count)
-            print("--------------------------------")
-            print("Infered Roll:  " + str(deg_roll) +  "[deg]")
-            print("GT Roll:       " + str(label_deg[0]) + "[deg]")
-            print("Infered Pitch: " + str(deg_pitch) + "[deg]")
-            print("GT Pitch:      " + str(label_deg[1]) + "[deg]")
-            print("--------------------------------")
-            print("Infered Roll:  " + str(rad_roll) +  "[rad]")
-            print("GT Roll:       " + str(label_rad[0]) + "[rad]")
-            print("Infered Pitch: " + str(rad_pitch) + "[rad]")
-            print("GT Pitch:      " + str(label_rad[1]) + "[rad]")
-            print("--------------------------------")
-            print("\n\n\n")
+            print("--------------------Deg--------------------")
+            print("Infered Roll  :" + str(deg_roll) +  "[deg]")
+            print("GT Roll       :" + str(label_deg[0]) + "[deg]")
+            print("Diff Roll     :" + str(deg_diff_roll) + "[deg]")
+            print("Infered Pitch :" + str(deg_pitch) + "[deg]")
+            print("GT Pitch      :" + str(label_deg[1]) + "[deg]")
+            print("Diff Pitch    :" + str(deg_diff_pitch) + "[deg]")
+            print("--------------------Rad--------------------")
+            print("Infered Roll  :" + str(rad_roll) +  "[rad]")
+            print("GT Roll       :" + str(label_rad[0]) + "[rad]")
+            print("Diff Roll     :" + str(rad_diff_roll) + "[rad]")
+            print("Infered Pitch :" + str(rad_pitch) + "[rad]")
+            print("GT Pitch      :" + str(label_rad[1]) + "[rad]")
+            print("Diff Pitch    :" + str(rad_diff_pitch) + "[rad]")
+            print("-------------------------------------------")
 
-            deg_diff_roll = abs(deg_roll - label_deg[0])
-            deg_diff_pitch = abs(deg_pitch - label_deg[1])
-            rad_diff_roll = abs(rad_roll - label_rad[0])
-            rad_diff_pitch = abs(rad_pitch - label_rad[1])
+            
 
             tmp_result_deg = [infer_count, deg_roll, deg_pitch, label_deg[0], label_deg[1], deg_diff_roll, deg_diff_pitch]
             tmp_result_rad = [infer_count, rad_roll, rad_pitch, label_rad[0], label_rad[1], rad_diff_roll, rad_diff_pitch]
@@ -153,6 +169,7 @@ class FrameInfer:
 
             print("Period [s]: ", time.time() - start_clock)
             print("---------------------")
+            print("\n\n")
 
             infer_count += 1
 
